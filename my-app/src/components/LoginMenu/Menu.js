@@ -2,7 +2,8 @@ import styles from './Menu.module.css'
 
 function Menu(props) {
     return <>
-        <div onClick={props.closeOverlay}  className={styles.overlay}>
+        <div onClick={props.closeOverlay} className={styles.overlay}>
+        </div>
             <div className={styles["overlay-content"]}>
                 <div className={styles["menu"]}>
                     <div className={styles.menuHeader}>Returning Customer?</div>
@@ -19,7 +20,6 @@ function Menu(props) {
 
                 </div>
             </div>
-        </div>
     </>
 }
 
