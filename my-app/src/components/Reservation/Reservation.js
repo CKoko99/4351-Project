@@ -1,4 +1,6 @@
-function reservation() {
+import {useSelector} from 'react-redux';
+
+function Reservation() { 
     const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
     const firstName = useSelector(state => state.auth.firstName);
     const lastName = useSelector(state => state.auth.lastName);
@@ -17,4 +19,4 @@ function reservation() {
         </div>
     </>)
 }
-export default reservation;
+export default Reservation;
