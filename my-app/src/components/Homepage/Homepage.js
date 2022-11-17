@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 function Homepage() {
 
-  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  //const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const [showMenu, setShowMenu] = useState(false);
   function reservationButton() {
     setShowMenu(true);

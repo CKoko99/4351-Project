@@ -20,8 +20,7 @@
     z-index: 2;
     top: 0;
 }
-.menu{
-}
+
 .menuHeader{
     border-radius: 20px 20px 0 0;
     background-color: wheat;
@@ -49,3 +48,12 @@
     transition: 0.5s;
     outline: none;
 }
+.link{
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.links{
+    display: flex;
+    align-items: center;
+    flex-direction: column;}

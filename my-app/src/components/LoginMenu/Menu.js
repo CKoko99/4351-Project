@@ -19,11 +19,11 @@ function Menu(props) {
                         <input type="text" placeholder="Password:" />
                     </div>
                     <button>Sign In</button>
-                    <div>
-                        <div>
-                            <div>New User?</div><div>Create An Account</div>
+                    <div className={styles.links}>
+                        <div style={{display: 'flex'}}>
+                            <div style={{padding: '0px 15px'}}>New User?</div><div className={styles.link}>Create An Account</div>
                         </div>
-                        <div onClick={goToReservationPage}>Continue As Guest</div>
+                        <div className={styles.link} onClick={goToReservationPage}>Continue As Guest</div>
                     </div>
                 </div>
 
