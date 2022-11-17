@@ -1,0 +1,14 @@
+.inputFields{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+}
+.page{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    z-index: 0;
+}
