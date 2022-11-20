@@ -1,0 +1,66 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    background-color: rgb(239, 239, 239);
+}
+
+p{
+    font-size: .75em;
+    font-style: italic;
+    font-weight: lighter;
+    color: blue;
+    text-align: left;
+    padding-left: 1em;
+    padding-top: 0;
+    padding-bottom: .5em;
+    margin: 0;
+}
+
+.everything{
+    margin-top: 5em;
+    display: inline-grid;
+    grid-template-columns: auto;
+    border-color: aliceblue;
+}
+svg{
+    padding-left: 1em;
+    color: rgb(0, 0, 0);
+}
+
+h1{
+    color: rgb(0, 0, 0);
+    font-size: 1.6em;
+    font-weight: lighter;
+    margin-bottom: 2em;
+    margin-left: 1em;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    border: solid 1px rgb(224, 224, 224);
+    width: 25vw;
+    padding: 2em;
+    justify-content: center;
+    border-radius: .5em;
+    background-color: rgb(255, 255, 255);
+}
+
+
+input{
+    background-color: rgb(255, 255, 255);
+    border-radius: .5em;
+    border: solid 1px rgb(224, 224, 224);
+    padding: .5em;
+    margin: .1em;
+    padding-left: 1em;
+}
+
+*:focus {
+    outline: none;
+}
+
+input:focus-visible{
+    border: solid 1px rgb(0, 0, 171);
+}
