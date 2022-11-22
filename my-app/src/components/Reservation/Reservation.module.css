@@ -1,8 +1,70 @@
+@media (max-width: 600px) {
 .inputFields{
     display: flex;
     flex-direction: column;
-    width: 40%;
+    width: 90%;
+    z-index: 1;
 }
+.inputFields > input {
+    position: relative;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    background-color: var(--red);
+    border: 2px solid transparent;
+    color: white;
+    transition: all 0.35s ease-in-out;
+    box-shadow: rgb(0 0 0 / 25%) 0 2px 5px;
+}
+
+.inputFields > input::placeholder{
+    color: rgb(231, 186, 186);
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+}
+
+.inputFields > input:focus {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+    font-weight: 500;
+    border: 2px solid #FDEDF0;
+    outline: none;
+}
+
+.inputFields > input[type=date]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+.datePicker {
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    padding: 1rem 2rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    background-color: var(--red);
+    color: white;
+    transition: all 0.35s ease-in-out;
+    box-shadow: rgb(0 0 0 / 25%) 0 2px 5px;
+}
+
+.datePicker::placeholder {
+    color: rgb(231, 186, 186);
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+}
+
+.datePicker:focus {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+    font-weight: 500;
+    border: 2px solid #FDEDF0;
+    outline: none;
+}
+
+
 .page{
     display: flex;
     flex-direction: column;
@@ -11,4 +73,44 @@
     height: 100vh;
     width: 100vw;
     z-index: 0;
+    background: url(../../../public/images/reservation.jpg) center / cover no-repeat;
+}
+
+.heading {
+    font-family: 'Roboto', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    z-index: 1;
+    max-width: 90%;
+    text-align: center;
+    color: var(--black);
+    margin-bottom: 6vh;
+}
+
+.overlay{
+    position: absolute;
+    background-color: white;
+    opacity: 0.8;
+    width: 100%;
+    height: 100%;
+}
+
+.logoLink {
+    display: flex;
+    position: fixed;
+    top: 2vh;
+    left: 3vw;
+    text-decoration: none;
+    color: var(--red);
+    z-index: 999;
+}
+
+.logo {
+    font-family: 'Work Sans';
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 1px; 
+    font-style: italic;
+    text-transform: capitalize;
+}
 }

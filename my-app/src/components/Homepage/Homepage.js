@@ -1,6 +1,5 @@
 import styles from './Homepage.module.css';
 import cafeImg from './Cafe.png';
-import { useSelector } from 'react-redux';
 import Menu from '../LoginMenu/Menu';
 import { useState } from 'react';
 
