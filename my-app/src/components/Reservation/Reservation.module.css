@@ -79,7 +79,7 @@
 }
 
 .inputFields > input::placeholder{
-    color: rgb(231, 186, 186);
+    color: var(--pink);
     font-weight: 500;
     font-family: 'Roboto', sans-serif;
 }
@@ -107,7 +107,7 @@
 }
 
 .datePicker::placeholder {
-    color: rgb(231, 186, 186);
+    color: var(--pink);
     font-weight: 500;
     font-family: 'Roboto', sans-serif;
 }
