@@ -18,6 +18,7 @@ function Reservation() {
         </a>
         <div className={styles.page}>
             <div className={styles.overlay}></div>
+                <div className={styles.contentWrapper}>
                 <h1 className={styles.heading}>Book a Reservation</h1>
                 <div className={styles.inputFields}>
 
@@ -35,7 +36,9 @@ function Reservation() {
                         onChange={selectedDate => setSelectedDate(selectedDate)} 
                         className={styles.datePicker} placeholderText='Choose a date'
                         minDate={new Date()}
-                        isClearable/>
+                        isClearable
+                        popperPlacement='top-end'/>
+                        </div>
                 </div>
         </div>
     </>)
