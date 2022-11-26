@@ -1,8 +1,8 @@
-import { useSelector } from 'react-redux';
-import DatePicker from 'react-datepicker';
+// import { useSelector } from 'react-redux';
+// import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './Reservation.module.css';
-import React, { useState } from 'react';
+import React/*, { useState }*/ from 'react';
 import styled from 'styled-components';
 
 
