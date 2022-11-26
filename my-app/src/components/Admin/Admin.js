@@ -24,7 +24,7 @@ function Admin() {
       };
     
       getTables();
-    }, []);
+    }, [tableCollectionRef]);
     
     const createTable = async () => {
 
