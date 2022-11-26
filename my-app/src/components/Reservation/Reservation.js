@@ -4,14 +4,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 import styles from './Reservation.module.css';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import table from '../../images/table.svg';
 
 
 function Reservation() {
-    const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
-    const firstName = useSelector(state => state.auth.firstName);
-    const lastName = useSelector(state => state.auth.lastName);
-    const [selectedDate, setSelectedDate] = useState(null)
+    // const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+    // const firstName = useSelector(state => state.auth.firstName);
+    // const lastName = useSelector(state => state.auth.lastName);
+    // const [selectedDate, setSelectedDate] = useState(null)
     return (
     <>
         <a className={styles.logoLink} href='/'>
@@ -181,7 +180,7 @@ min-height: 7rem;
 border-radius: 0.5rem;
 border: 2px solid #26030A;
 background-color: rgba(245, 246, 250, 0.4);
-box-shadow: 0 5px 10px rgba(#000, 0.1);
+box-shadow: 0 5px 10px rgba(0,0,0, 0.25);
 transition: 0.15s ease;
 cursor: pointer;
 position: relative;
@@ -208,6 +207,7 @@ position: relative;
 &:hover {
 		border-color:#568A2E;
         background-color: #e8eee9;
+        box-shadow: 0 0 0 3px rgb(87, 180, 15);
 		&:before {
 			transform: scale(1);
 			opacity: 1;
