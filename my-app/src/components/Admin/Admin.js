@@ -181,7 +181,7 @@ background: var(--red);
 const DefaultInput = styled.input`
 position: relative;
 padding: 0.5rem 1rem;
-width: 10%;
+width: 12.5%;
 border-radius: 12px;
 border: 1px solid var(--black);
 margin-right: 1rem;
