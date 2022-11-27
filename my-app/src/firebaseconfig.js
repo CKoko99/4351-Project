@@ -1,22 +1,17 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyD_QHjlnSJE2HI0MenAV7Woqsw1fazoKqk",
-  authDomain: "restaurant-reservation-33c61.firebaseapp.com",
-  projectId: "restaurant-reservation-33c61",
-  storageBucket: "restaurant-reservation-33c61.appspot.com",
-  messagingSenderId: "338184770468",
-  appId: "1:338184770468:web:33d0bdc34c9e13ffbb6731",
-  measurementId: "G-ZBJYZFNF24"
+  apiKey: "AIzaSyCInum8TLXyo_-_08ZWFY3xN5Z3Ikn7hQE",
+  authDomain: "cosc4351-40e40.firebaseapp.com",
+  projectId: "cosc4351-40e40",
+  storageBucket: "cosc4351-40e40.appspot.com",
+  messagingSenderId: "872197037352",
+  appId: "1:872197037352:web:0d67286d985ad158e3041d",
+  measurementId: "G-ZCWZMJ9X3X"
 };
 
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
