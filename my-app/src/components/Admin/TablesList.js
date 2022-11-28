@@ -59,7 +59,14 @@ const TablesList = ({ getTableId}) => {
 export default TablesList;
 
 const RefreshWrap = styled.div`
+display: flex;
 margin-top: 1.5rem;
+
+@media (max-width: 479px) {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.5vh;
+}
 `
 
 const Button = styled.button`
@@ -77,17 +84,33 @@ transition: all 0.25s ease;
      box-shadow: 0 5px 10px rgba(0,0,0, 0.25);
      transform: translateY(-2px);
  }
+
+ @media (max-width: 479px) {
+    font-size: 14px;
+ }
 `
 
 const Border = styled.div`
 height: 40vh;
 overflow-y: scroll;
 border: 2px solid var(--black);
+
+@media (max-width: 479px) {
+    width: 100%;
+    overflow: scroll;
+}
 `
 
 const ButtonGroup = styled.div`
 display: flex;
 width: 100%;
+
+@media (max-width: 479px) {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    margin: 12px 0px;
+}
 `
 
 const BorderGrid = styled.div`
@@ -103,6 +126,13 @@ display: grid;
 grid-template-columns: 1fr 1fr 1fr 1fr;
 grid-column-start: 1;
 grid-column-end: 5;
+
+@media (max-width: 479px) {
+    & > p {
+        font-size: 12px;
+        font-weight: 600;
+    }
+}
 `
 const Header = styled.div`
 display: grid;
@@ -111,6 +141,12 @@ grid-column-start: 1;
 grid-column-end: 5;
 border-bottom: 2px solid var(--black);
 margin-bottom: 1rem;
+
+@media (max-width: 479px){
+    & > h1{
+        font-size: 14px;
+    }
+}
 `
 const SmallButton = styled.button`
 padding: 0.33rem 1rem;
@@ -126,6 +162,13 @@ transition: all 0.25s ease;
 &:hover {
     box-shadow: 0 5px 10px rgba(0,0,0, 0.33);
     transform: translateY(-2px);
+}
+
+@media (max-width: 479px){
+    margin-right: 0%;
+    padding: 5px 10px;
+    font-size: 12px;
+    width: 100%;
 }
 `
 const EditButton = styled(SmallButton)`

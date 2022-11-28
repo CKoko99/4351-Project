@@ -179,14 +179,22 @@ display: flex;
 align-items: center;
 justify-content: center;
 margin-top: 1.5rem;
+
+@media (max-width: 479px) {
+  margin-top: 2vh;
+}
 `
 
 const Heading = styled.h1`
 text-align: center;
+
+@media (max-width: 479px) {
+  margin-bottom: 1.5vh;
+}
 `
 
 const Icon = styled.img`
-width: 1.5rem;
+width: 1.2rem;
 `
 
 const AddTableWrapper = styled.div`
@@ -195,6 +203,10 @@ align-items: center;
 justify-content: center;
 height: 33%;
 width: 100%;
+
+@media (max-width: 479px) {
+  margin-top: 2vh;
+}
 `
 
 const Button = styled.button`
@@ -217,10 +229,19 @@ transition: all 0.25s ease;
 const BigButton = styled(Button)`
 color: rgb(255, 203, 42);
 padding: 0.67rem 1rem;
+
+@media (max-width: 479px){
+  font-size: 14px;
+  padding: 0.4rem 1rem;
+}
 `
 
 const Form = styled.form`
 width: 50%;
+
+@media (max-width: 479px){
+  width: 100%;
+}
 `
 
 const FormGroup = styled.div`
@@ -231,6 +252,10 @@ const InputGroup = styled.div`
 display: flex;
 justify-content: flex-start;
 margin-bottom: 1rem;
+
+@media (max-width: 479px) {
+  margin-bottom: 1.5vh;
+}
 `
 
 const IconWrapper = styled.div`
@@ -242,6 +267,10 @@ width: 3rem;
 padding: 1rem 0rem;
 border-top-left-radius: 12px;
 border-bottom-left-radius: 12px;
+
+@media (max-width: 479px) {
+  padding: 0.33rem 0rem;
+}
 `
 
 const FormControl = styled.input`
@@ -260,6 +289,10 @@ font-weight: 600;
 &::placeholder{
   font-weight: normal;
 }
+
+@media (max-width: 479px){
+  padding: 0.25rem 1rem;
+}
 `
 const FormSelect = styled.select`
 width: calc(100% - 3rem);
@@ -273,10 +306,13 @@ font-weight: 600;
 &:focus{
   border: 2px solid #333;
 }
+
+@media (max-width: 479px) {
+  padding: 0.33rem 1rem;
+}
 `
 
 const FormOption = styled.option`
-padding: 0.33rem;
 `
 
 

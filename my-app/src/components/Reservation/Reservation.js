@@ -13,11 +13,6 @@ function Reservation() {
     // const [selectedDate, setSelectedDate] = useState(null)
     return (
     <>
-        <a className={styles.logoLink} href='/'>
-            <div className={styles.logo}>
-                cougar cafe
-            </div>
-        </a>
         <div className={styles.page}>
             <div className={styles.overlay}></div>
 
