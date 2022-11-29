@@ -1,27 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import TableDataService from '../../services/table.services';
 import styled from 'styled-components';
 
 
-const TablesList = ({ getTableId}) => {
-    const [tables, setTables] = useState([]);
-
-    useEffect(() => {
-        getTables();
-    }, []);
-
-    const getTables = async () => {
-        const data = await TableDataService.getAllTables();
-        console.log(data.docs);
-        setTables(data.docs.map((doc) => ({
-            ...doc.data(), id: doc.id
-        })));
-    };
-    
+const TablesList = ({ getTables, tables}) => { 
     const deleteHandler = async (id) => {
         await TableDataService.deleteTable(id);
         getTables();
     };
+
+    function convertKey(key) {
+        var newKey = ''
+         switch (key) {
+             case 0:
+                 newKey = '10am'
+                 break;
+             case 1:
+                 newKey = '11am'
+                 break;
+             case 2:
+                 newKey = '12pm'
+                 break;
+             case 3:
+                 newKey = '1pm'
+                 break;
+             case 4:
+                 newKey = '2pm'
+                 break;
+             case 5:
+                 newKey = '3pm'
+                 break;
+             case 6:
+                 newKey = '4pm'
+                 break;
+             case 7:
+                 newKey = '5pm'
+                 break;
+             case 8:
+                 newKey = '6pm'
+                 break;
+             case 9:
+                 newKey = '7pm'
+                 break;
+             case 10:
+                 newKey = '8pm'
+                 break;
+             case 11:
+                 newKey = '9pm'
+                 break;
+             default:
+                 break;
+         }
+         return newKey;
+     }
 
   return (
     <>
@@ -38,9 +69,12 @@ const TablesList = ({ getTableId}) => {
         <Cell key={index}> 
             <p>{table.number}</p>
             <p>{table.size}</p>
-            <p>{table.isReserved}</p>
+            <select>
+                {table.timeslot.map((value, key) =>(
+                    <option value={key} key={key}>{convertKey(key)} : {value}</option>
+                ))}
+            </select>
             <ButtonGroup>
-                <EditButton onClick={(e) => getTableId(table.id)}>Edit</EditButton>
                 <SmallButton onClick={(e) => deleteHandler(table.id)}>Delete</SmallButton>
             </ButtonGroup> 
         </Cell>
@@ -60,12 +94,11 @@ export default TablesList;
 
 const RefreshWrap = styled.div`
 display: flex;
-margin-top: 1.5rem;
+margin-top: 1.5vh;
 
 @media (max-width: 479px) {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 1.5vh;
 }
 `
 
@@ -91,7 +124,7 @@ transition: all 0.25s ease;
 `
 
 const Border = styled.div`
-height: 40vh;
+height: 33vh;
 overflow-y: scroll;
 border: 2px solid var(--black);
 
@@ -104,13 +137,6 @@ border: 2px solid var(--black);
 const ButtonGroup = styled.div`
 display: flex;
 width: 100%;
-
-@media (max-width: 479px) {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 5px;
-    margin: 12px 0px;
-}
 `
 
 const BorderGrid = styled.div`
@@ -123,14 +149,39 @@ background: whitesmoke;
 
 const Cell = styled.div`
 display: grid;
+align-items: center;
 grid-template-columns: 1fr 1fr 1fr 1fr;
 grid-column-start: 1;
 grid-column-end: 5;
+
+& > select {
+    height: 80%;
+    width: 80%;
+    max-width: 250px;
+    padding-left: 5px;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    background-color: #333;
+    color: var(--pink);
+
+    & > option{
+        font-weight: 600;
+        background-color: inherit;
+    }
+}
 
 @media (max-width: 479px) {
     & > p {
         font-size: 12px;
         font-weight: 600;
+    }
+
+    & > select {
+    height: 67%;
+    padding-left: 5px;
+    font-size: 12px;
     }
 }
 `
@@ -170,9 +221,4 @@ transition: all 0.25s ease;
     font-size: 12px;
     width: 100%;
 }
-`
-const EditButton = styled(SmallButton)`
-border: 2px solid var(--green);
-background-color: rgba(87, 180, 15, 0.25);
-color: var(--green);
 `

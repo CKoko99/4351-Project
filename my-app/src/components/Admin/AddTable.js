@@ -5,13 +5,53 @@ import toast, { Toaster } from 'react-hot-toast';
 import NumberIcon from '../../images/number.svg';
 import SizeIcon from '../../images/size.svg';
 import AvailableIcon from '../../images/available.svg';
+import TimeIcon from '../../images/time.svg';
 
-const AddTable = ({ id, setTableId}) => {
+const AddTable = ({ id, setTableId, tables }) => {
+const original = [
+  'Available',
+  'Available',
+  'Available',
+  'Available',
+  'Available',
+  'Available',
+  'Available',
+  'Available',
+  'Available',
+  'Available',
+  'Available',
+  'Available'
+];
+  const [disabled, setDisabled] = useState(true)
   const [number, setNumber] = useState("");
   const [size, setSize] = useState("");
-  const [isReserved, setIsReserved] = useState("Available");
+  const [index, setIndex] = useState(0);
+  const [timeslot, setTimeslot] = useState([
+    'Available',
+    'Available',
+    'Available',
+    'Available',
+    'Available',
+    'Available',
+    'Available',
+    'Available',
+    'Available',
+    'Available',
+    'Available',
+    'Available'
+  ]);
+
+  const updateTimeslot = index => e => {
+    console.log('index: ' + index);
+    console.log('timeslot value: ' + e.target.value);
+    let newArr = [...timeslot];
+    newArr[index] = e.target.value;
+
+    setTimeslot(newArr);
+  }
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
         if (number === "" || size === "") {
           toast.error("All fields are mandatory!", {
@@ -28,10 +68,10 @@ const AddTable = ({ id, setTableId}) => {
         });
           return;
         } 
-          const newTable = {
+          var newTable = {
             number,
             size,
-            isReserved,
+            timeslot
             };
             console.log(newTable);
     
@@ -51,6 +91,12 @@ const AddTable = ({ id, setTableId}) => {
                   }
               });
             } else {
+              newTable = {
+                number,
+                size,
+                timeslot: original
+                };
+
                 await TableDataService.addTables(newTable);
                 toast.success("New Table added successfully!", {
                   duration: 5000,
@@ -78,16 +124,15 @@ const AddTable = ({ id, setTableId}) => {
           });
             }
             setNumber("");
-            setSize("");    
+            setSize("");   
   };
 
   const editHandler = async () => {
     try {
+     
       const docSnap = await TableDataService.getTable(id);
       console.log("the record is :", docSnap.data());
       setNumber(docSnap.data().number);
-      setSize(docSnap.data().size);
-      setIsReserved(docSnap.data().isReserved);
     } catch (err) {
       toast.error(err.message, {
         duration: 5000,
@@ -104,9 +149,20 @@ const AddTable = ({ id, setTableId}) => {
   };
 
   useEffect(() => {
-    console.log("The id here is : ", id);
+    setDisabled(true);
+    console.log("The id here is : ", id, " disable? ", disabled);
     if (id !== undefined && id !== "") {
+      setDisabled(false);
       editHandler();
+    } else if (number !== ''){
+      tables.forEach(element => {
+        if(number === element.number){
+          id = element.id;
+          setDisabled(false)
+          editHandler()
+          return;
+        }
+      });
     }
   });
   return (
@@ -115,7 +171,9 @@ const AddTable = ({ id, setTableId}) => {
       <AddTableWrapper>
         
         <Form onSubmit={handleSubmit}>
-        <Heading>Add or Update Tables</Heading>
+          {disabled ? 
+          <Heading>Add Table</Heading>:
+          <Heading>Update Table</Heading>}
           <FormGroup>
             <InputGroup>
               <IconWrapper>
@@ -147,14 +205,36 @@ const AddTable = ({ id, setTableId}) => {
               />
             </InputGroup>
           </FormGroup>
-          
+
+          <FormGroup>
+            <InputGroup>
+              <IconWrapper>
+                <Icon src={TimeIcon} />
+              </IconWrapper>
+              <FormSelect disabled={disabled} value={index} onChange={(e) => setIndex(e.target.value)}>
+                <FormOption value={0}>10am</FormOption>
+                <FormOption value={1}>11am</FormOption>
+                <FormOption value={2}>12pm</FormOption>
+                <FormOption value={3}>1pm</FormOption>
+                <FormOption value={4}>2pm</FormOption>
+                <FormOption value={5}>3pm</FormOption>
+                <FormOption value={6}>4pm</FormOption>
+                <FormOption value={7}>5pm</FormOption>
+                <FormOption value={8}>6pm</FormOption>
+                <FormOption value={9}>7pm</FormOption>
+                <FormOption value={10}>8pm</FormOption>
+                <FormOption value={11}>9pm</FormOption>
+              </FormSelect>
+            </InputGroup>
+          </FormGroup>
+
           <FormGroup>
             <InputGroup>
               <IconWrapper>
                 <Icon src={AvailableIcon} />
               </IconWrapper>
-              <FormSelect value={isReserved} onChange={(e) => setIsReserved(e.target.value)}>
-                <FormOption value='Available'>Available</FormOption>
+              <FormSelect disabled={disabled} onChange={updateTimeslot(index)}>
+                <FormOption defaultValue='Available'>Available</FormOption>
                 <FormOption value='Not Available'>Not Available</FormOption>
               </FormSelect>
             </InputGroup>
@@ -238,6 +318,7 @@ padding: 0.67rem 1rem;
 
 const Form = styled.form`
 width: 50%;
+max-width: 700px;
 
 @media (max-width: 479px){
   width: 100%;

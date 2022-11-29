@@ -1,24 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Admin.css';
 import styled from 'styled-components';
 import AddTable from './AddTable';
 import TablesList from './TablesList';
+import TableDataService from '../../services/table.services';
 
 function Admin() {
 
     const [tableId, setTableId] = useState("");
+    const [tables, setTables] = useState([]);
 
-    const getTableIdHandler = (id) => {
-        console.log("The ID of document to be edited: ", id);
-        setTableId(id);
-      };
+          useEffect(() => {
+        getTables();
+    }, []);
+
+    const getTables = async () => {
+        const data = await TableDataService.getAllTables();
+        console.log(data.docs);
+        setTables(data.docs.map((doc) => ({
+            ...doc.data(), id: doc.id
+        })));
+    };
+    
 
   return (
     <>
     <Section>
         <Header>ADMIN PORTAL</Header>
-        <TablesList getTableId={getTableIdHandler} />
-        <AddTable id={tableId} setTableId={setTableId} />
+        <TablesList getTables={getTables} tables={tables} />
+        <AddTable id={tableId} setTableId={setTableId} tables={tables} />
     </Section>
     </>
   )
@@ -44,5 +54,9 @@ text-transform: capitalize;
 const Section = styled.section`
 display: flex;
 flex-direction: column;
-padding: 7vh 2vw 2vh 2vw;
+padding: 6vh 2vw 2vh 2vw;
+
+@media (max-width: 479px) {
+  padding: 7vh 2vw 2vh 2vw;
+}
 `
