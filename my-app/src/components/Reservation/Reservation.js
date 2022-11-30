@@ -1,158 +1,250 @@
-// import { useSelector } from 'react-redux';
-// import DatePicker from 'react-datepicker';
+import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './Reservation.module.css';
-import React/*, { useState }*/ from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-
+import TableDataService from '../../services/table.services';
+import TimeIcon from '../../images/time.svg';
+import DateIcon from '../../images/date.svg';
+import PartyIcon from '../../images/group.svg';
 
 function Reservation() {
-    // const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
-    // const firstName = useSelector(state => state.auth.firstName);
-    // const lastName = useSelector(state => state.auth.lastName);
-    // const [selectedDate, setSelectedDate] = useState(null)
+    const [tableId, setTableId] = useState([])
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [partySize, setPartySize] = useState(1);
+    const [index, setIndex] = useState(0);
+    const [count, setCount] = useState(0);
+    const [tables, setTables] = useState([]);
+
+          useEffect(() => {
+        getTables();
+    }, []);
+
+    const getTables = async () => {
+        const data = await TableDataService.getAllTables();
+        console.log(data.docs);
+        setTables(data.docs.map((doc) => ({
+            ...doc.data(), id: doc.id
+        })));
+    };
+
+    const updateCount = () => {
+        let temp = 0;
+        tables.forEach(element => {
+            if (element.timeslot[index] === 'Available') {
+                temp += 1;
+            }
+        });
+
+        setCount(temp);
+      }
+
+    useEffect(() => {
+        updateCount();
+    });
+
+    const getAllIds = (e) => {
+        if(e.target.checked) {
+            setTableId(tableId => [...tableId, e.target.value]);
+
+        } else if (!e.target.checked && tableId.length !== 0){
+           
+            setTableId(tableId.slice(0, -1));
+            
+        } 
+    }
+      
     return (
     <>
         <div className={styles.page}>
             <div className={styles.overlay}></div>
 
                 <div className={styles.contentWrapper}>
-                    <h1 className={styles.heading}>Select a Table Below</h1>
-                    <FlexWrapper>                        <HeadingWrapper>
-                        <Amount>8 Available</Amount>
-                        <Legend>
-                            <AvailabilityWrap>
-                                <Circle empty/>
-                                Available
-                            </AvailabilityWrap>
-                            <AvailabilityWrap>
-                                <Circle />
-                                Unavailable
-                            </AvailabilityWrap>
-                        </Legend>
+                    <h1 className={styles.heading}>Book a Reservation</h1>
+                    <Form>
+                        <FormWrapper>
+                    <FormGroup>
+                        <InputGroup>
+                        <IconWrapper>
+                            <Icon src={TimeIcon} />
+                        </IconWrapper>
+                        <FormSelect value={index} onChange={e => setIndex(e.target.value)}>
+                            <FormOption hidden={true} defaultValue=''>Choose a Time Slot</FormOption>
+                            <FormOption value={0}>10am</FormOption>
+                            <FormOption value={1}>11am</FormOption>
+                            <FormOption value={2}>12pm</FormOption>
+                            <FormOption value={3}>1pm</FormOption>
+                            <FormOption value={4}>2pm</FormOption>
+                            <FormOption value={5}>3pm</FormOption>
+                            <FormOption value={6}>4pm</FormOption>
+                            <FormOption value={7}>5pm</FormOption>
+                            <FormOption value={8}>6pm</FormOption>
+                            <FormOption value={9}>7pm</FormOption>
+                            <FormOption value={10}>8pm</FormOption>
+                            <FormOption value={11}>9pm</FormOption>
+                        </FormSelect>
+                        </InputGroup>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <InputGroup>
+                        <IconWrapper>
+                            <Icon src={PartyIcon}/>
+                        </IconWrapper>
+                        <FormControl
+                            type="number"
+                            placeholder="Party Size"
+                            min="1"
+                            max="20"
+                            value={partySize}
+                            onChange={(e) => setPartySize(e.target.value)}
+                        />
+                        </InputGroup>
+                    </FormGroup>
+                                
+                    <FormGroup>
+                        <InputGroup>
+                            <IconWrapper>
+                                <Icon src={DateIcon} />
+                            </IconWrapper>
+                            <DatePicker
+                                selected={selectedDate}
+                                className={styles.datepicker}
+                                onChange={selectedDate => setSelectedDate(selectedDate)} 
+                                placeholderText='Choose a date'
+                                minDate={new Date()}
+                                isClearable
+                                />
+                        </InputGroup>
+                    </FormGroup>
+                    </FormWrapper>
+                    <FlexWrapper>                        
+                        <HeadingWrapper>
+                        <Amount>{count} Available</Amount>
                         </HeadingWrapper>
                         <CheckboxGroup>
-                            <CheckBox>
-                                <CheckBoxWrapper>
-                                    <CheckBoxInput type='checkbox' />
-                                    <CheckBoxTile>
-                                        <CheckBoxIcon>
-                                        
-                                        </CheckBoxIcon>
-                                        <CheckBoxLabel>2</CheckBoxLabel>
-                                    </CheckBoxTile>
-                                </CheckBoxWrapper>
-                            </CheckBox>
-                            <CheckBox>
-                                <CheckBoxWrapper>
-                                    <CheckBoxInput type='checkbox' />
-                                    <CheckBoxTile>
-                                        <CheckBoxIcon>
-                                        
-                                        </CheckBoxIcon>
-                                        <CheckBoxLabel>2</CheckBoxLabel>
-                                    </CheckBoxTile>
-                                </CheckBoxWrapper>
-                            </CheckBox>
-                            <CheckBox>
-                                <CheckBoxWrapper>
-                                    <CheckBoxInput type='checkbox' />
-                                    <CheckBoxTile>
-                                        <CheckBoxIcon>
-                                        
-                                        </CheckBoxIcon>
-                                        <CheckBoxLabel>4</CheckBoxLabel>
-                                    </CheckBoxTile>
-                                </CheckBoxWrapper>
-                            </CheckBox>
-                            <CheckBox>
-                                <CheckBoxWrapper>
-                                    <CheckBoxInput type='checkbox' />
-                                    <CheckBoxTile>
-                                        <CheckBoxIcon>
-                                        
-                                        </CheckBoxIcon>
-                                        <CheckBoxLabel>4</CheckBoxLabel>
-                                    </CheckBoxTile>
-                                </CheckBoxWrapper>
-                            </CheckBox>
-                            <CheckBox>
-                                <CheckBoxWrapper>
-                                    <CheckBoxInput type='checkbox' />
-                                    <CheckBoxTile>
-                                        <CheckBoxIcon>
-                                        
-                                        </CheckBoxIcon>
-                                        <CheckBoxLabel>6</CheckBoxLabel>
-                                    </CheckBoxTile>
-                                </CheckBoxWrapper>
-                            </CheckBox>
-                            <CheckBox>
-                                <CheckBoxWrapper>
-                                    <CheckBoxInput type='checkbox' />
-                                    <CheckBoxTile>
-                                        <CheckBoxIcon>
-                                        
-                                        </CheckBoxIcon>
-                                        <CheckBoxLabel>6</CheckBoxLabel>
-                                    </CheckBoxTile>
-                                </CheckBoxWrapper>
-                            </CheckBox>
-                            <CheckBox>
-                                <CheckBoxWrapper>
-                                    <CheckBoxInput type='checkbox' />
-                                    <CheckBoxTile>
-                                        <CheckBoxIcon>
-                                        
-                                        </CheckBoxIcon>
-                                        <CheckBoxLabel>8</CheckBoxLabel>
-                                    </CheckBoxTile>
-                                </CheckBoxWrapper>
-                            </CheckBox>
-                            <CheckBox>
-                                <CheckBoxWrapper>
-                                    <CheckBoxInput type='checkbox' />
-                                    <CheckBoxTile>
-                                        <CheckBoxIcon>
-                                        
-                                        </CheckBoxIcon>
-                                        <CheckBoxLabel>8</CheckBoxLabel>
-                                    </CheckBoxTile>
-                                </CheckBoxWrapper>
-                            </CheckBox>
+                            {tables.map((element) =>(
+                               element.timeslot[index] === 'Available' ?
+                                <CheckBox  key={element.id}>
+                                    <CheckBoxWrapper>
+                                        <CheckBoxInput type='checkbox' value={element.id} onChange={e => getAllIds(e)}/>
+                                        <CheckBoxTile>
+                                            <CheckBoxLabel>{element.size}</CheckBoxLabel>
+                                            <CheckBoxTitle>
+                                                Table {element.number}
+                                            </CheckBoxTitle>
+                                        </CheckBoxTile>
+                                    </CheckBoxWrapper>
+                                </CheckBox>
+                                :
+                                null
+                            ))}
                         </CheckboxGroup>
                     </FlexWrapper>
-
-                </div>
-                {/* <div className={styles.contentWrapper}>
-                <h1 className={styles.heading}>Book a Reservation</h1>
-                <div className={styles.inputFields}>
-
-                    {isLoggedIn && <>
-                        <div>First Name: {firstName}</div>
-                        <div>Last Name: {lastName}</div>
-                    </>}
-                    {!isLoggedIn && <>
-                        <input type="text" placeholder="First Name" />
-                        <input type="text" placeholder="Last Name" />
-                    </>}
-                        <input type="number" min='1' placeholder="Number of People" />
-                        <DatePicker
-                        selected={selectedDate}
-                        onChange={selectedDate => setSelectedDate(selectedDate)} 
-                        className={styles.datePicker} placeholderText='Choose a date'
-                        minDate={new Date()}
-                        isClearable
-                        popperPlacement='top-end'/>
-                        </div>
-                </div> */}
+                    <br></br>
+                    <button onClick={(e)=>{e.preventDefault(); console.log(tableId)}}>test</button>
+                </Form>
+            </div>
         </div>
     </>)
 }
 export default Reservation;
 
+const FormWrapper = styled.div`
+position: relative;
+display: flex;
+align-items: flex-start;
+width: 90%;
+z-index: 2;
+margin-bottom: 1.5vh;
+`
+
+const FormControl = styled.input`
+width: calc(100% - 3rem);
+border-top-right-radius: 12px;
+border-bottom-right-radius: 12px;
+border: 1px solid #333;
+padding: 1rem 2rem;
+outline: none;
+font-weight: 600;
+
+&:focus{
+  border: 2px solid #333;
+}
+
+&::placeholder{
+  font-weight: normal;
+}
+
+@media (max-width: 479px){
+  padding: 0.25rem 1rem;
+}
+`
+
+const Form = styled.form`
+z-index: 0;
+`
+
+const FormOption = styled.option`
+`
+
+const FormSelect = styled.select`
+border-top-right-radius: 12px;
+border-bottom-right-radius: 12px;
+border: 1px solid #333;
+padding: 1rem 1rem;
+outline: none;
+font-weight: 600;
+
+&:focus{
+  border: 1px solid var(--red);
+}
+
+@media (max-width: 479px) {
+  padding: 0.33rem 1rem;
+}
+`
+
+const Icon = styled.img`
+width: 1.2rem;
+`
+
+const IconWrapper = styled.div`
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: var(--red);
+width: 3rem;
+padding: 1rem 0rem;
+border-top-left-radius: 12px;
+border-bottom-left-radius: 12px;
+
+@media (max-width: 479px) {
+  padding: 0.33rem 0rem;
+}
+`
+
+const InputGroup = styled.div`
+display: flex;
+justify-content: flex-start;
+
+@media (max-width: 479px) {
+  margin-bottom: 1.5vh;
+}
+`
+
+const FormGroup = styled.div`
+z-index: 0;
+margin-right: 1vw;
+`
+
+const CheckBoxTitle = styled.span`
+    color: var(--black);
+    font-size: 15px;
+`
+
 const CheckBoxLabel = styled.span`
-font-size: 5rem;
+font-size: 6vh;
 color: #26030A;
 font-style: italic;
 font-weight: 800;
@@ -160,18 +252,15 @@ font-weight: 800;
 	text-align: center;
 `
 
-const CheckBoxIcon = styled.span`
-transition: .375s ease;
-	color: #494949;
-`
-
 const CheckBoxTile = styled.span`
 display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: center;
-width: 7rem;
-min-height: 7rem;
+padding: 5px 0px;
+width: 10vh;
+height: 10vh;
+min-height: 50px;
 border-radius: 0.5rem;
 border: 2px solid #26030A;
 background-color: rgba(245, 246, 250, 0.4);
@@ -208,6 +297,11 @@ position: relative;
 			opacity: 1;
 		}
 	}
+
+    @media (max-width: 479px) {
+        width: 12vh;
+        height: 12vh;
+    }
 `
 
 const CheckBoxInput = styled.input`
@@ -231,7 +325,7 @@ const CheckBoxInput = styled.input`
             border-color:  #57b40f;
         }
 
-        ${CheckBoxIcon}, ${CheckBoxLabel} {
+        ${CheckBoxTitle}, ${CheckBoxLabel} {
             color: #57b40f;
         }
     }
@@ -246,8 +340,6 @@ display: flex;
 flex-direction: column;
 background: var(--red);
 width: 90vw;
-height: 50vh;
-z-index: 1;
 border-radius: 12px;
 box-shadow: rgb(0 0 0 / 50%) 0 2px 5px;
 `
@@ -259,35 +351,27 @@ grid-column-start: 1;
 grid-column-end: 5;
 display: flex;
 flex-wrap: wrap;
-justify-content: center;
+justify-content: flex-start;
 user-select: none;
-max-width: 600px;
+width: 50vw;
+max-width: 750px;
 margin-left: auto;
 margin-right: auto;
 border: none;
 	& > * {
 		margin: .5rem 0.5rem;
 	}
+@media (max-width: 479px){
+    width: auto;
+
+    & > * {
+        margin: 1vh 1.5vw;
+    }
+}
 `
 
-// const MainGrid = styled.div`
-// display: grid;
-// grid-template-columns: 1fr 1fr 1fr 1fr;
-// grid-template-rows: 1fr 1fr 1fr 1fr;
-// background: var(--red);
-// width: 90vw;
-// height: 60vh;
-// z-index: 1;
-// row-gap: 1rem;
-// column-gap: 1rem;
-// border-radius: 12px;
-// box-shadow: rgb(0 0 0 / 50%) 0 2px 5px;
-// `
 const HeadingWrapper = styled.div`
-/* grid-row-start: 1;
-grid-row-end: 2;
-grid-column-start: 1;
-grid-column-end: 5; */
+
 `
 const Amount = styled.div`
 font-family: 'Roboto', sans-serif;
@@ -295,26 +379,4 @@ font-size: 1rem;
 font-weight: 500;
 color: white;
 padding: 1rem 1rem;
-`
-
-const Legend =styled.legend`
-display: flex;
-align-items: flex-start;
-justify-content: flex-start;
-`
-const AvailabilityWrap = styled.div`
-display: flex;
-font-weight: 500;
-color: white;
-align-items: flex-start;
-justify-content: flex-start;
-padding: 0.75rem 1rem;
-`
-const Circle = styled.div`
-width: 12px;
-height: 12px;
-${props => props.empty ? `background: none;`: `background: #FDEDF0;`};
-${props => props.empty ? `border: 2px solid var(--pink);` : `border: 2px solid #FDEDF0;`};
-border-radius: 50%;
-margin-right: 0.5rem;
 `
