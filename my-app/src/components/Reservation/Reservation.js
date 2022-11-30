@@ -1,5 +1,3 @@
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import styles from './Reservation.module.css';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
@@ -7,14 +5,32 @@ import TableDataService from '../../services/table.services';
 import TimeIcon from '../../images/time.svg';
 import DateIcon from '../../images/date.svg';
 import PartyIcon from '../../images/group.svg';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { getFirestore, doc, setDoc} from 'firebase/firestore';
+import toast, { Toaster } from 'react-hot-toast';
 
 function Reservation() {
+    const [selectedDate, setSelectedDate] = useState(new Date())
     const [tableId, setTableId] = useState([])
-    const [selectedDate, setSelectedDate] = useState(new Date());
     const [partySize, setPartySize] = useState(1);
     const [index, setIndex] = useState(0);
     const [count, setCount] = useState(0);
     const [tables, setTables] = useState([]);
+    const [timeslot, setTimeslot] = useState([
+        'Available',
+        'Available',
+        'Available',
+        'Available',
+        'Available',
+        'Available',
+        'Available',
+        'Available',
+        'Available',
+        'Available',
+        'Available',
+        'Available'
+      ]);
 
           useEffect(() => {
         getTables();
@@ -53,12 +69,96 @@ function Reservation() {
             
         } 
     }
-      
+
+    const updateTimeslot = e => {
+        setIndex(e.target.value);
+        console.log('timeslot value: ' + e.target.value);
+        let newArr = [...timeslot];
+        newArr[e.target.value] = "Not Available";
+    
+        setTimeslot(newArr);
+      }
+    
+
+    const handleSubmit = async (e) =>{
+        e.preventDefault();
+
+        let userSelection = [];
+
+        tables.forEach(element => {
+            tableId.forEach(id => {
+                if(id === element.id){
+                    userSelection.push(element);
+                }
+            });
+        });
+
+        console.log(userSelection);
+
+        if (tableId.length === 0) {
+            toast.error("Please select a table to reserve", {
+                duration: 5000,
+                style: {
+                    background: 'var(--red)',
+                    color: 'white',
+                    boxShadow: ' 0 5px 10px rgba(0,0,0, 0.5)'
+                },
+                iconTheme: {
+                    primary: 'white',
+                    secondary: 'var(--red)',
+                }
+            });
+            return;
+        } else if (index === 0){
+            toast.error("Make sure to choose a time slot!", {
+                duration: 5000,
+                style: {
+                    background: 'var(--red)',
+                    color: 'white',
+                    boxShadow: ' 0 5px 10px rgba(0,0,0, 0.5)'
+                },
+                iconTheme: {
+                    primary: 'white',
+                    secondary: 'var(--red)',
+                }
+            });
+        } else if (partySize === undefined || partySize === null || partySize === '' || partySize < 1 || partySize > 20) {
+            toast.error("Party size must be between 1 to 20 guests!", {
+                duration: 5000,
+                style: {
+                    background: 'var(--red)',
+                    color: 'white',
+                    boxShadow: ' 0 5px 10px rgba(0,0,0, 0.5)'
+                },
+                iconTheme: {
+                    primary: 'white',
+                    secondary: 'var(--red)',
+                }
+            });
+        } else if (selectedDate === null || selectedDate === "" || selectedDate === undefined) {
+            toast.error("Don't forget to choose a date for your reservation!", {
+                duration: 5000,
+                style: {
+                    background: 'var(--red)',
+                    color: 'white',
+                    boxShadow: ' 0 5px 10px rgba(0,0,0, 0.5)'
+                },
+                iconTheme: {
+                    primary: 'white',
+                    secondary: 'var(--red)',
+                }
+            });
+        }
+        else{
+            
+        } 
+    } 
+    
+
     return (
     <>
+        <Toaster />
         <div className={styles.page}>
-            <div className={styles.overlay}></div>
-
                 <div className={styles.contentWrapper}>
                     <h1 className={styles.heading}>Book a Reservation</h1>
                     <Form>
@@ -68,7 +168,7 @@ function Reservation() {
                         <IconWrapper>
                             <Icon src={TimeIcon} />
                         </IconWrapper>
-                        <FormSelect value={index} onChange={e => setIndex(e.target.value)}>
+                        <FormSelect onChange={updateTimeslot}>
                             <FormOption hidden={true} defaultValue=''>Choose a Time Slot</FormOption>
                             <FormOption value={0}>10am</FormOption>
                             <FormOption value={1}>11am</FormOption>
@@ -108,13 +208,12 @@ function Reservation() {
                                 <Icon src={DateIcon} />
                             </IconWrapper>
                             <DatePicker
-                                selected={selectedDate}
-                                className={styles.datepicker}
-                                onChange={selectedDate => setSelectedDate(selectedDate)} 
-                                placeholderText='Choose a date'
-                                minDate={new Date()}
-                                isClearable
-                                />
+                            selected = {selectedDate}
+                            onChange ={(date) => setSelectedDate(date)} 
+                            className={styles.datepicker}
+                            minDate = {new Date()}
+                            placeholder="Choose a Date"
+                            />
                         </InputGroup>
                     </FormGroup>
                     </FormWrapper>
@@ -142,7 +241,8 @@ function Reservation() {
                         </CheckboxGroup>
                     </FlexWrapper>
                     <br></br>
-                    <button onClick={(e)=>{e.preventDefault(); console.log(tableId)}}>test</button>
+                    <button
+                    type='submit' onClick={handleSubmit}>Submit</button>
                 </Form>
             </div>
         </div>
@@ -342,6 +442,8 @@ background: var(--red);
 width: 90vw;
 border-radius: 12px;
 box-shadow: rgb(0 0 0 / 50%) 0 2px 5px;
+padding: 0.5rem;
+padding-bottom: 2vh;
 `
 
 const CheckboxGroup = styled.fieldset`
