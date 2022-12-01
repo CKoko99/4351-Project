@@ -10,17 +10,69 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Timestamp } from 'firebase/firestore';
 import toast, { Toaster } from 'react-hot-toast';
 import NameIcon from '../../images/name.svg';
+import DaysDataService from '../../services/days.service';
+import {emptyTables} from '../emptyTables';
+
 
 function Reservation() {
+
+    function convertKey(key) {
+        var newKey = ''
+         switch (key) {
+             case 0:
+                 newKey = '10am'
+                 break;
+             case 1:
+                 newKey = '11am'
+                 break;
+             case 2:
+                 newKey = '12pm'
+                 break;
+             case 3:
+                 newKey = '1pm'
+                 break;
+             case 4:
+                 newKey = '2pm'
+                 break;
+             case 5:
+                 newKey = '3pm'
+                 break;
+             case 6:
+                 newKey = '4pm'
+                 break;
+             case 7:
+                 newKey = '5pm'
+                 break;
+             case 8:
+                 newKey = '6pm'
+                 break;
+             case 9:
+                 newKey = '7pm'
+                 break;
+             case 10:
+                 newKey = '8pm'
+                 break;
+             case 11:
+                 newKey = '9pm'
+                 break;
+             default:
+                 break;
+         }
+         return newKey;
+     }
+
     const [phone, setPhone] = useState('')
+    const [hide, setHide] = useState(true)
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
     const [selectedDate, setSelectedDate] = useState(new Date())
-    const [tableId, setTableId] = useState([])
+    const [tableNumber, setTableNumber] = useState([])
     const [partySize, setPartySize] = useState(1);
     const [index, setIndex] = useState(0);
     const [count, setCount] = useState(0);
-    const [tables, setTables] = useState([]);
+    const [currentDay, setCurrentDay] = useState({});
+    const [days, setDays] = useState([]);
+    const [dayId, setDayId] = useState('')
     const [timeslot, setTimeslot] = useState([
         'Available',
         'Available',
@@ -36,23 +88,111 @@ function Reservation() {
         'Available'
       ]);
 
+
+
           useEffect(() => {
-        getTables();
+            getDays();
+       
     }, []);
 
-    const getTables = async () => {
-        const data = await TableDataService.getAllTables();
-        console.log(data.docs);
-        setTables(data.docs.map((doc) => ({
+    const getDays = async () => {
+        const data = await DaysDataService.getAllDays();
+        setDays(data.docs.map((doc) => ({
             ...doc.data(), id: doc.id
         })));
+
+        
     };
+
+    const handleDaysSumbit = async (e) => {
+        e.preventDefault();
+
+        if (selectedDate === null || selectedDate === undefined || selectedDate === '') {
+            toast.error("Please select a date!", {
+                duration: 5000,
+                style: {
+                    background: 'var(--red)',
+                    color: 'white',
+                    boxShadow: ' 0 5px 10px rgba(0,0,0, 0.5)'
+                },
+                iconTheme: {
+                    primary: 'white',
+                    secondary: 'var(--red)',
+                }
+            });
+              return;
+        }
+        let exists = false;
+        let currentId = ''
+        let onlyDate = selectedDate.toDateString();
+        let resArr = [];
+
+       days.forEach(item => {
+            if (onlyDate === item.date) {
+                exists = true;
+                currentId = item.id
+                return;
+            }
+       });
+
+       const newEntry = {
+        Reservations: resArr,
+        date: onlyDate,
+        tables: emptyTables
+       }
+       
+       if (!exists) {
+            let content = newEntry;
+            await DaysDataService.addDay(newEntry);
+            days.forEach(item => {
+                if (onlyDate === item.date) {
+                    currentId = item.id
+                    content = item;
+                    return;
+                }
+           });
+   
+           setCurrentDay(content);
+           setDayId(currentId);
+           setHide(false);
+       }
+       else{
+        const oldEntry = await DaysDataService.getDay(currentId);
+        let content = oldEntry.data()
+        
+        content = {
+            ...content,
+            id: currentId
+        }
+
+        setCurrentDay(content);
+        setDayId(currentId);
+        setHide(false);
+       }
+    }
+
+    const getAllTableNums = (e) => {
+        if(e.target.checked) {
+            setTableNumber(tableNumber => [...tableNumber, e.target.value]);
+
+        } else if (!e.target.checked && tableNumber.length !== 0){
+           
+            setTableNumber(tableNumber.slice(0, -1));
+            
+        } 
+        ;
+    }
 
     const updateCount = () => {
         let temp = 0;
-        tables.forEach(element => {
-            if (element.timeslot[index] === 'Available') {
-                temp += 1;
+       
+        days.forEach(element => {
+            if (element.id === dayId){
+                element.tables.forEach(item => {
+                    if (item.timeslot[index] === 'Available') {
+                        temp += 1;
+                    }
+                });
             }
         });
 
@@ -63,24 +203,23 @@ function Reservation() {
         updateCount();
     });
 
-    const getAllIds = (e) => {
-        if(e.target.checked) {
-            setTableId(tableId => [...tableId, e.target.value]);
+    ///////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
 
-        } else if (!e.target.checked && tableId.length !== 0){
-           
-            setTableId(tableId.slice(0, -1));
-            
-        } 
-    }
+
+
 
     const updateTimeslot = e => {
         setIndex(e.target.value);
-        console.log('timeslot value: ' + e.target.value);
-        let newArr = [...timeslot];
+       
+        let newArr = [...currentDay.tables[e.target.value].timeslot];
         newArr[e.target.value] = "Not Available";
     
         setTimeslot(newArr);
+      
       }
     
 
@@ -105,18 +244,16 @@ function Reservation() {
 
         let userSelection = [];
         let sumSize = 0;
-        tables.forEach(element => {
-            tableId.forEach(id => {
-                if(id === element.id){
+        currentDay.tables.forEach(element => {
+            tableNumber.forEach(num => {
+                if(num === element.number){
                     userSelection.push(element);
                     sumSize += Number(element.size);
                 }
             });
         });
 
-        console.log(userSelection, "sum size: ", sumSize);
-
-        if (tableId.length === 0) {
+        if (tableNumber.length === 0) {
             toast.error("Please select a table to reserve", {
                 duration: 5000,
                 style: {
@@ -204,21 +341,67 @@ function Reservation() {
             }
             
             else{
-                for (const element of userSelection) {
-                    const timestamp = Timestamp.fromDate(selectedDate);
-                    console.log(timestamp.toString());
-                    element.dates.push(timestamp);
-                    element.timeslot = timeslot;
-
-                    await TableDataService.updateTable(element.id, element);
-
+                try {
+                    let mulitpleTables = []
+                    let updateEntry = currentDay;
+    
+                    for (const element of userSelection) {
+                        
+                        element.timeslot = timeslot;
+    
+                        updateEntry.tables.forEach(item => {
+                            if(item.number === element.number){
+                                item = element;
+                                return;
+                            }
+                        });
+    
+                        mulitpleTables.push(element.number);
+                    }
+    
+                    updateEntry.Reservations.push({
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        partySize: partySize,
+                        table: mulitpleTables,
+                        timeReserved: convertKey(Number(index)),
+                        dateOfReservation: selectedDate.toDateString(),
+                        created: Timestamp.now()
+                    })
+                    await DaysDataService.updateDays(currentDay.id, updateEntry);
+                    toast.success("Your reservation has been completed!", {
+                        duration: 5000,
+                        style: {
+                            background: 'var(--green)',
+                            color: 'white',
+                        },
+                        iconTheme: {
+                            primary: 'white',
+                            secondary: 'var(--green)'
+                        }
+                    });
+                    setName('');
+                    setEmail('');
+                    setPhone('');
+                    setPartySize(1);
+                    setHide(true);
+                } catch (error) {
+                    toast.error(error.message, {
+                        duration: 5000,
+                        style: {
+                            background: 'var(--red)',
+                            color: 'white',
+                        },
+                        iconTheme: {
+                            primary: 'white',
+                            secondary: 'var(--red)'
+                        }
+                    });
                 }
-                console.log('success')
+                
             }
         }
-        else{
-            console.log('success')
-        } 
     } 
     
 
@@ -228,7 +411,72 @@ function Reservation() {
         <div className={styles.page}>
                 <div className={styles.contentWrapper}>
                     <h1 className={styles.heading}>Book a Reservation</h1>
-                    <Form>
+                    <DateCheck onSubmit={handleDaysSumbit}>
+                        <FormWrapper>
+                    <FormGroup>
+                        <InputGroup>
+                            <IconWrapper>
+                                <Icon src={DateIcon} />
+                            </IconWrapper>
+                            <DatePicker
+                            selected = {selectedDate}
+                            onChange ={(date) => setSelectedDate(date)} 
+                            className={styles.datepicker}
+                            minDate = {new Date()}
+                            placeholder="Choose a Date"
+                            />
+                        </InputGroup>
+                    </FormGroup>
+                    <button type='submit'>Check date</button>
+                    </FormWrapper> 
+                    </DateCheck>
+                   
+
+                    {hide ? null : 
+
+                    <FlexWrapper>                        
+                        <HeadingWrapper>
+                        <Amount>{count} Available</Amount>
+                        </HeadingWrapper>
+                        <CheckboxGroup>
+                            {/* {tables.map((element) =>(
+                               element.timeslot[index] === 'Available' ?
+                                <CheckBox  key={element.id}>
+                                    <CheckBoxWrapper>
+                                        <CheckBoxInput type='checkbox' value={element.id} onChange={e => getAllIds(e)}/>
+                                        <CheckBoxTile>
+                                            <CheckBoxLabel>{element.size}</CheckBoxLabel>
+                                            <CheckBoxTitle>
+                                                Table {element.number}
+                                            </CheckBoxTitle>
+                                        </CheckBoxTile>
+                                    </CheckBoxWrapper>
+                                </CheckBox>
+                                :
+                                null
+                            ))} */}
+                            {currentDay.tables.map((element, key) => (
+                                    element.timeslot[index] === 'Available' ?
+                                    <CheckBox key={key}>
+                                    <CheckBoxWrapper>
+                                        <CheckBoxInput type='checkbox' value={element.number} onChange={e => getAllTableNums(e)} />
+                                        <CheckBoxTile>
+                                            <CheckBoxLabel>{element.size}</CheckBoxLabel>
+                                            <CheckBoxTitle>
+                                                Table {element.number}
+                                            </CheckBoxTitle>
+                                        </CheckBoxTile>
+                                    </CheckBoxWrapper>
+                                </CheckBox>
+                                :
+                                null
+                                )
+                                )}
+                        </CheckboxGroup>
+                    </FlexWrapper>
+                    }
+                    {hide ? null :
+                 <Form onSubmit={handleSubmit}>
                     <FormWrapper>
                     <FormGroup>
                         <InputGroup>
@@ -313,7 +561,7 @@ function Reservation() {
                         </InputGroup>
                     </FormGroup>
                                 
-                    <FormGroup>
+                    {/* <FormGroup>
                         <InputGroup>
                             <IconWrapper>
                                 <Icon src={DateIcon} />
@@ -326,38 +574,12 @@ function Reservation() {
                             placeholder="Choose a Date"
                             />
                         </InputGroup>
-                    </FormGroup>
+                    </FormGroup> */}
                     </FormWrapper>
-
-
-
-                    <FlexWrapper>                        
-                        <HeadingWrapper>
-                        <Amount>{count} Available</Amount>
-                        </HeadingWrapper>
-                        <CheckboxGroup>
-                            {tables.map((element) =>(
-                               element.timeslot[index] === 'Available' ?
-                                <CheckBox  key={element.id}>
-                                    <CheckBoxWrapper>
-                                        <CheckBoxInput type='checkbox' value={element.id} onChange={e => getAllIds(e)}/>
-                                        <CheckBoxTile>
-                                            <CheckBoxLabel>{element.size}</CheckBoxLabel>
-                                            <CheckBoxTitle>
-                                                Table {element.number}
-                                            </CheckBoxTitle>
-                                        </CheckBoxTile>
-                                    </CheckBoxWrapper>
-                                </CheckBox>
-                                :
-                                null
-                            ))}
-                        </CheckboxGroup>
-                    </FlexWrapper>
-                    <br></br>
                     <button
-                    type='submit' onClick={handleSubmit}>Submit</button>
+                    type='submit'>Submit</button>
                 </Form>
+                }
             </div>
         </div>
     </>)
@@ -397,6 +619,9 @@ font-weight: 600;
 
 const Form = styled.form`
 z-index: 0;
+`
+const DateCheck = styled(Form)`
+z-index: 1;
 `
 
 const FormOption = styled.option`
@@ -558,6 +783,7 @@ border-radius: 12px;
 box-shadow: rgb(0 0 0 / 50%) 0 2px 5px;
 padding: 0.5rem;
 padding-bottom: 2vh;
+margin-bottom: 2vh;
 `
 
 const CheckboxGroup = styled.fieldset`

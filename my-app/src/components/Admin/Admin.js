@@ -16,7 +16,6 @@ function Admin() {
 
     const getTables = async () => {
         const data = await TableDataService.getAllTables();
-        console.log(data.docs);
         setTables(data.docs.map((doc) => ({
             ...doc.data(), id: doc.id
         })));

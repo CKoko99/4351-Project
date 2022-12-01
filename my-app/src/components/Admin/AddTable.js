@@ -42,8 +42,6 @@ const original = [
   ]);
 
   const updateTimeslot = index => e => {
-    console.log('index: ' + index);
-    console.log('timeslot value: ' + e.target.value);
     let newArr = [...timeslot];
     newArr[index] = e.target.value;
 
@@ -73,7 +71,6 @@ const original = [
             size,
             timeslot
             };
-            console.log(newTable);
     
             try {
             if (id !== undefined && id !== "") {
@@ -131,7 +128,6 @@ const original = [
     try {
      
       const docSnap = await TableDataService.getTable(id);
-      console.log("the record is :", docSnap.data());
       setNumber(docSnap.data().number);
     } catch (err) {
       toast.error(err.message, {
@@ -150,7 +146,6 @@ const original = [
 
   useEffect(() => {
     setDisabled(true);
-    console.log("The id here is : ", id, " disable? ", disabled);
     if (id !== undefined && id !== "") {
       setDisabled(false);
       editHandler();
