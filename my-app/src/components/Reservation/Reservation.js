@@ -68,7 +68,6 @@ function Reservation() {
     const [tableNumber, setTableNumber] = useState([])
     const [partySize, setPartySize] = useState(1);
     const [index, setIndex] = useState(0);
-    //const [count, setCount] = useState(0);
     const [currentDay, setCurrentDay] = useState({});
     const [days, setDays] = useState([]);
     const [dayId, setDayId] = useState('')
@@ -105,6 +104,7 @@ function Reservation() {
 
     const handleDaysSumbit = async (e) => {
         e.preventDefault();
+        let onlyDate = selectedDate.toDateString();
 
         if (selectedDate === null || selectedDate === undefined || selectedDate === '') {
             toast.error("Please select a date!", {
@@ -120,10 +120,33 @@ function Reservation() {
                 }
             });
               return;
-        }
+        } else if (onlyDate.includes('Jan 01') || onlyDate.includes('Feb 14') || onlyDate.includes('Jul 04') || onlyDate.includes('Oct 31') || onlyDate.includes('Dec 25')) {
+            toast.success("A hold fee is required for any reservations on major holidays.", {
+                duration: 5000,
+                style: {
+                    background: 'var(--green)',
+                    color: 'white',
+                },
+                iconTheme: {
+                    primary: 'white',
+                    secondary: 'var(--green)'
+                }
+            });
+        } else if (onlyDate.includes('Fri') || onlyDate.includes('Sat') || onlyDate.includes('Sun')) {
+            toast.success("Weekend reservations require a credit card on file.", {
+                duration: 5000,
+                style: {
+                    background: 'var(--green)',
+                    color: 'white',
+                },
+                iconTheme: {
+                    primary: 'white',
+                    secondary: 'var(--green)'
+                }
+            });
+        } 
         let exists = false;
         let currentId = ''
-        let onlyDate = selectedDate.toDateString();
         let resArr = [];
 
        days.forEach(item => {
@@ -181,26 +204,6 @@ function Reservation() {
         } 
         ;
     }
-
-    // const updateCount = () => {
-    //     let temp = 0;
-    //    console.log(dayId)
-    //     days.forEach(element => {
-    //         if (element.id === dayId){
-    //             element.tables.forEach(item => {
-    //                 if (item.timeslot[index] === 'Available') {
-    //                     temp += 1;
-    //                 }
-    //             });
-    //         }
-    //     });
-
-    //     setCount(temp);
-    //   }
-
-    // useEffect(() => {
-    //     updateCount();       
-    // });
 
     const updateTimeslot = e => {
         setIndex(e.target.value);
