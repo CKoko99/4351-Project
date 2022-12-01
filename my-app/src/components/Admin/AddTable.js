@@ -68,7 +68,7 @@ const original = [
         });
           return;
         } 
-          var newTable = {
+          let newTable = {
             number,
             size,
             timeslot

@@ -7,10 +7,14 @@ import DateIcon from '../../images/date.svg';
 import PartyIcon from '../../images/group.svg';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getFirestore, doc, setDoc} from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import toast, { Toaster } from 'react-hot-toast';
+import NameIcon from '../../images/name.svg';
 
 function Reservation() {
+    const [phone, setPhone] = useState('')
+    const [email, setEmail] = useState('')
+    const [name, setName] = useState('')
     const [selectedDate, setSelectedDate] = useState(new Date())
     const [tableId, setTableId] = useState([])
     const [partySize, setPartySize] = useState(1);
@@ -83,17 +87,34 @@ function Reservation() {
     const handleSubmit = async (e) =>{
         e.preventDefault();
 
-        let userSelection = [];
+        if (name === '' || email === '' || phone === '' || name === undefined || email === undefined || phone === undefined) {
+            toast.error("All fields are mandatory!", {
+                duration: 5000,
+                style: {
+                    background: 'var(--red)',
+                    color: 'white',
+                    boxShadow: ' 0 5px 10px rgba(0,0,0, 0.5)'
+                },
+                iconTheme: {
+                    primary: 'white',
+                    secondary: 'var(--red)',
+                }
+            });
+              return;
+        }
 
+        let userSelection = [];
+        let sumSize = 0;
         tables.forEach(element => {
             tableId.forEach(id => {
                 if(id === element.id){
                     userSelection.push(element);
+                    sumSize += Number(element.size);
                 }
             });
         });
 
-        console.log(userSelection);
+        console.log(userSelection, "sum size: ", sumSize);
 
         if (tableId.length === 0) {
             toast.error("Please select a table to reserve", {
@@ -122,6 +143,7 @@ function Reservation() {
                     secondary: 'var(--red)',
                 }
             });
+            return;
         } else if (partySize === undefined || partySize === null || partySize === '' || partySize < 1 || partySize > 20) {
             toast.error("Party size must be between 1 to 20 guests!", {
                 duration: 5000,
@@ -135,6 +157,7 @@ function Reservation() {
                     secondary: 'var(--red)',
                 }
             });
+            return;
         } else if (selectedDate === null || selectedDate === "" || selectedDate === undefined) {
             toast.error("Don't forget to choose a date for your reservation!", {
                 duration: 5000,
@@ -148,9 +171,53 @@ function Reservation() {
                     secondary: 'var(--red)',
                 }
             });
+            return;
+        } else if (partySize !== undefined || partySize !== null || partySize !== '' ){
+            if(partySize <= 8 && partySize > sumSize || (partySize <= 8 && userSelection.length > 1)){
+                toast.error("Your party size can fit on one table. If there are none available, please choose another date or time!", {
+                    duration: 7000,
+                    style: {
+                        background: 'var(--red)',
+                        color: 'white',
+                        boxShadow: ' 0 5px 10px rgba(0,0,0, 0.5)'
+                    },
+                    iconTheme: {
+                        primary: 'white',
+                        secondary: 'var(--red)',
+                    }
+                });
+                return;
+            } else if (partySize > 8 && partySize > sumSize || (partySize > 8  && ((sumSize - Number(partySize) ) > 1))){
+                toast.error("Since your party is greater than our biggest table, We can only assign tables to your party greater than your party size or with a maximum of 1 empty seat. Please choose another date or time if there are no tables that can accomodate this!", {
+                    duration: 10000,
+                    style: {
+                        background: 'var(--red)',
+                        color: 'white',
+                        boxShadow: ' 0 5px 10px rgba(0,0,0, 0.5)'
+                    },
+                    iconTheme: {
+                        primary: 'white',
+                        secondary: 'var(--red)',
+                    }
+                });
+                return;
+            }
+            
+            else{
+                for (const element of userSelection) {
+                    const timestamp = Timestamp.fromDate(selectedDate);
+                    console.log(timestamp.toString());
+                    element.dates.push(timestamp);
+                    element.timeslot = timeslot;
+
+                    await TableDataService.updateTable(element.id, element);
+
+                }
+                console.log('success')
+            }
         }
         else{
-            
+            console.log('success')
         } 
     } 
     
@@ -162,6 +229,50 @@ function Reservation() {
                 <div className={styles.contentWrapper}>
                     <h1 className={styles.heading}>Book a Reservation</h1>
                     <Form>
+                    <FormWrapper>
+                    <FormGroup>
+                        <InputGroup>
+                        <IconWrapper>
+                            <Icon src={NameIcon}/>
+                        </IconWrapper>
+                        <FormControl
+                            type="text"
+                            placeholder="Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                        </InputGroup>
+                    </FormGroup> 
+
+                    <FormGroup>
+                        <InputGroup>
+                        <IconWrapper>
+                            <Icon src={NameIcon}/>
+                        </IconWrapper>
+                        <FormControl
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        </InputGroup>
+                    </FormGroup> 
+
+                    <FormGroup>
+                        <InputGroup>
+                        <IconWrapper>
+                            <Icon src={NameIcon}/>
+                        </IconWrapper>
+                        <FormControl
+                            type="tel"
+                            placeholder="Phone Number"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                        />
+                        </InputGroup>
+                    </FormGroup>
+
+                    </FormWrapper>
                         <FormWrapper>
                     <FormGroup>
                         <InputGroup>
@@ -217,6 +328,9 @@ function Reservation() {
                         </InputGroup>
                     </FormGroup>
                     </FormWrapper>
+
+
+
                     <FlexWrapper>                        
                         <HeadingWrapper>
                         <Amount>{count} Available</Amount>
@@ -254,13 +368,13 @@ const FormWrapper = styled.div`
 position: relative;
 display: flex;
 align-items: flex-start;
-width: 90%;
+width: 100%;
 z-index: 2;
 margin-bottom: 1.5vh;
 `
 
 const FormControl = styled.input`
-width: calc(100% - 3rem);
+width: 25ch;
 border-top-right-radius: 12px;
 border-bottom-right-radius: 12px;
 border: 1px solid #333;
@@ -335,7 +449,7 @@ justify-content: flex-start;
 
 const FormGroup = styled.div`
 z-index: 0;
-margin-right: 1vw;
+margin-right: 3vw;
 `
 
 const CheckBoxTitle = styled.span`
