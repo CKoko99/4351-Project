@@ -1,7 +1,6 @@
 import styles from './Reservation.module.css';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import TableDataService from '../../services/table.services';
 import TimeIcon from '../../images/time.svg';
 import DateIcon from '../../images/date.svg';
 import PartyIcon from '../../images/group.svg';
@@ -69,7 +68,7 @@ function Reservation() {
     const [tableNumber, setTableNumber] = useState([])
     const [partySize, setPartySize] = useState(1);
     const [index, setIndex] = useState(0);
-    const [count, setCount] = useState(0);
+    //const [count, setCount] = useState(0);
     const [currentDay, setCurrentDay] = useState({});
     const [days, setDays] = useState([]);
     const [dayId, setDayId] = useState('')
@@ -92,7 +91,7 @@ function Reservation() {
 
           useEffect(() => {
             getDays();
-       
+            
     }, []);
 
     const getDays = async () => {
@@ -142,11 +141,11 @@ function Reservation() {
        }
        
        if (!exists) {
+        console.log("days: ",days);
             let content = newEntry;
             await DaysDataService.addDay(newEntry);
             days.forEach(item => {
                 if (onlyDate === item.date) {
-                    currentId = item.id
                     content = item;
                     return;
                 }
@@ -183,34 +182,25 @@ function Reservation() {
         ;
     }
 
-    const updateCount = () => {
-        let temp = 0;
-       
-        days.forEach(element => {
-            if (element.id === dayId){
-                element.tables.forEach(item => {
-                    if (item.timeslot[index] === 'Available') {
-                        temp += 1;
-                    }
-                });
-            }
-        });
+    // const updateCount = () => {
+    //     let temp = 0;
+    //    console.log(dayId)
+    //     days.forEach(element => {
+    //         if (element.id === dayId){
+    //             element.tables.forEach(item => {
+    //                 if (item.timeslot[index] === 'Available') {
+    //                     temp += 1;
+    //                 }
+    //             });
+    //         }
+    //     });
 
-        setCount(temp);
-      }
+    //     setCount(temp);
+    //   }
 
-    useEffect(() => {
-        updateCount();
-    });
-
-    ///////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-
-
-
+    // useEffect(() => {
+    //     updateCount();       
+    // });
 
     const updateTimeslot = e => {
         setIndex(e.target.value);
@@ -412,9 +402,9 @@ function Reservation() {
                 <div className={styles.contentWrapper}>
                     <h1 className={styles.heading}>Book a Reservation</h1>
                     <DateCheck onSubmit={handleDaysSumbit}>
-                        <FormWrapper>
+                        <DateWrapper>
                     <FormGroup>
-                        <InputGroup>
+                        <DateGroup>
                             <IconWrapper>
                                 <Icon src={DateIcon} />
                             </IconWrapper>
@@ -425,10 +415,10 @@ function Reservation() {
                             minDate = {new Date()}
                             placeholder="Choose a Date"
                             />
-                        </InputGroup>
+                        </DateGroup>
                     </FormGroup>
-                    <button type='submit'>Check date</button>
-                    </FormWrapper> 
+                    <Button type='submit'>Check date</Button>
+                    </DateWrapper> 
                     </DateCheck>
                    
 
@@ -436,25 +426,9 @@ function Reservation() {
 
                     <FlexWrapper>                        
                         <HeadingWrapper>
-                        <Amount>{count} Available</Amount>
+                         <TableHeading>Select Any Open Table Below</TableHeading> 
                         </HeadingWrapper>
                         <CheckboxGroup>
-                            {/* {tables.map((element) =>(
-                               element.timeslot[index] === 'Available' ?
-                                <CheckBox  key={element.id}>
-                                    <CheckBoxWrapper>
-                                        <CheckBoxInput type='checkbox' value={element.id} onChange={e => getAllIds(e)}/>
-                                        <CheckBoxTile>
-                                            <CheckBoxLabel>{element.size}</CheckBoxLabel>
-                                            <CheckBoxTitle>
-                                                Table {element.number}
-                                            </CheckBoxTitle>
-                                        </CheckBoxTile>
-                                    </CheckBoxWrapper>
-                                </CheckBox>
-                                :
-                                null
-                            ))} */}
                             {currentDay.tables.map((element, key) => (
                                     element.timeslot[index] === 'Available' ?
                                     <CheckBox key={key}>
@@ -560,24 +534,10 @@ function Reservation() {
                         />
                         </InputGroup>
                     </FormGroup>
-                                
-                    {/* <FormGroup>
-                        <InputGroup>
-                            <IconWrapper>
-                                <Icon src={DateIcon} />
-                            </IconWrapper>
-                            <DatePicker
-                            selected = {selectedDate}
-                            onChange ={(date) => setSelectedDate(date)} 
-                            className={styles.datepicker}
-                            minDate = {new Date()}
-                            placeholder="Choose a Date"
-                            />
-                        </InputGroup>
-                    </FormGroup> */}
+
                     </FormWrapper>
-                    <button
-                    type='submit'>Submit</button>
+                    <Button
+                    type='submit'>Submit</Button>
                 </Form>
                 }
             </div>
@@ -586,6 +546,29 @@ function Reservation() {
 }
 export default Reservation;
 
+const Button = styled.button`
+margin-right: auto;
+margin-left: auto;
+border-radius: 12px;
+border: 2px solid var(--black);
+background-color: var(--green);
+color: white;
+padding: 0.75rem 2rem;
+font-weight: 600;
+transition: all 0.25s ease;
+
+ &:hover {
+     box-shadow: 0 5px 10px rgba(0,0,0, 0.25);
+     transform: translateY(-2px);
+ }
+
+@media (max-width: 479px){
+  font-size: 14px;
+  margin-top: 1vh;
+}
+`
+
+
 const FormWrapper = styled.div`
 position: relative;
 display: flex;
@@ -593,10 +576,24 @@ align-items: flex-start;
 width: 100%;
 z-index: 2;
 margin-bottom: 1.5vh;
+
+@media (max-width: 479px) {
+    flex-direction: column;
+}
+`
+
+const DateWrapper = styled(FormWrapper)`
+align-items: center;
+justify-content: center;
+
+& > ${Button}{
+    margin: 0;
+}
 `
 
 const FormControl = styled.input`
-width: 25ch;
+width: 22vw;
+max-width: 33ch;
 border-top-right-radius: 12px;
 border-bottom-right-radius: 12px;
 border: 1px solid #333;
@@ -613,12 +610,13 @@ font-weight: 600;
 }
 
 @media (max-width: 479px){
-  padding: 0.25rem 1rem;
+  
 }
 `
 
 const Form = styled.form`
 z-index: 0;
+width: 100%;
 `
 const DateCheck = styled(Form)`
 z-index: 1;
@@ -628,6 +626,8 @@ const FormOption = styled.option`
 `
 
 const FormSelect = styled.select`
+width: 22vw;
+max-width: 33ch;
 border-top-right-radius: 12px;
 border-bottom-right-radius: 12px;
 border: 1px solid #333;
@@ -640,7 +640,7 @@ font-weight: 600;
 }
 
 @media (max-width: 479px) {
-  padding: 0.33rem 1rem;
+  
 }
 `
 
@@ -672,9 +672,18 @@ justify-content: flex-start;
 }
 `
 
+const DateGroup = styled(InputGroup)`
+
+`
+
 const FormGroup = styled.div`
 z-index: 0;
 margin-right: 3vw;
+
+@media (max-width: 479px) {
+    margin-right: 0;
+}
+
 `
 
 const CheckBoxTitle = styled.span`
@@ -738,8 +747,8 @@ position: relative;
 	}
 
     @media (max-width: 479px) {
-        width: 12vh;
-        height: 12vh;
+        width: 25vw;
+        height: 25vw;
     }
 `
 
@@ -784,6 +793,11 @@ box-shadow: rgb(0 0 0 / 50%) 0 2px 5px;
 padding: 0.5rem;
 padding-bottom: 2vh;
 margin-bottom: 2vh;
+max-width: 1000px;
+
+@media screen {
+ margin: 3vh 0vw 5vh 0vw;   
+}
 `
 
 const CheckboxGroup = styled.fieldset`
@@ -795,8 +809,8 @@ display: flex;
 flex-wrap: wrap;
 justify-content: flex-start;
 user-select: none;
-width: 50vw;
-max-width: 750px;
+width: 67vw;
+max-width: 500px;
 margin-left: auto;
 margin-right: auto;
 border: none;
@@ -813,12 +827,14 @@ border: none;
 `
 
 const HeadingWrapper = styled.div`
-
+text-align: center;
 `
-const Amount = styled.div`
+const TableHeading = styled.div`
 font-family: 'Roboto', sans-serif;
 font-size: 1rem;
 font-weight: 500;
 color: white;
 padding: 1rem 1rem;
+margin-left: auto;
+margin-right: auto;
 `

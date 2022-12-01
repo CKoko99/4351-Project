@@ -4,9 +4,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     width: 100vw;
     z-index: 0;
+    padding: 10vh 5vw 5vh 5vw;
+
 }
 
 .contentWrapper {
@@ -15,7 +16,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    max-width: 1400px;
+    max-width: 1000px;
     width: 100%;
     height: 100%;
 
@@ -25,7 +26,6 @@
     font-size: 3rem;
     font-weight: 800;
     z-index: 1;
-    max-width: 90%;
     text-align: center;
     color: var(--black);
     margin-bottom: 2vh;
@@ -42,4 +42,20 @@
 
 .datepicker:focus{
     border: 2px solid var(--red);
+}
+
+@media (max-width: 479px){
+    .page{
+        padding-top: 15vh;
+        padding-bottom: 5vh;
+    }
+
+    .heading{
+        font-size: 10vw;
+    }
+
+    .datepicker{
+        padding: 1rem 0rem 1rem 5px;
+    }
+
 }
